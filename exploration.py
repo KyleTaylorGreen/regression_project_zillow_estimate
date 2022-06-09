@@ -493,6 +493,11 @@ def rel_plots(df, target_var, x_list, delineation):
         p1.map_dataframe(sns.lineplot, an_x, target_var, color='orange')
 
 def basic_feature_plots(df):
+    """Plots the basic features (bedroomcnt, bathroom cnt, square
+    feet, and yearbuilt) against the target variable taxvaluedollarcnt.
+    First two plots are scatter plots with a line plot added showing the 
+    mean value of taxvaluedollarcnt for that number of value. Second two
+    are regplots that have a regression line plotted."""
     fig, axes = plt.subplots(2, 2, figsize=(10,8))
 
     p1 = sns.scatterplot(x='bedroomcnt', y='taxvaluedollarcnt', 

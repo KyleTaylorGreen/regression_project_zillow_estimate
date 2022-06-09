@@ -93,6 +93,8 @@ def map_counties(df):
     return df
 
 def wrangle_zillow():
+    """ acquire and clean zillow data, returns zillow df, categorical data,
+    and quantitative column names"""
     # aquire zillow data from mysql or csv
     zillow = acquire.get_zillow_data()
 

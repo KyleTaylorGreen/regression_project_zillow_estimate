@@ -96,29 +96,47 @@ def base_RMSE(y_train, y_validate):
 
 
 class LRM:
+    """Class object to hold many descriptive values and train, validate
+    test splits for zillow data, as well as scaled and polynomial transformations
+    of each. Also includes methods to use the previously mentioned data for 
+    the type of regression requested."""
 
     def __init__(self, df, target_var, county='all'):
+        """Initialize many different values and set splits for linear regression"""
+        # splits input df into train, validate, test
+        # splits by county if county is specified
         self.county = county
 
+        # creates empty record base for each type of regression
         self.tweedies = pd.DataFrame()
         self.OLS = pd.DataFrame()
         self.lassolars = pd.DataFrame()
         self.poly = pd.DataFrame()
         
+        # maintains target variable
         self.target_var = target_var
 
+        # create train, validate and test splits,
+        # as well as scaling and appending scaled data to 
+        # train, validate and test splits.
         self.train, self.validate, self.test, \
         self.x_train_scaled, self.y_train, \
         self.x_validate_scaled, self.y_validate, \
         self.x_test_scaled, self.y_test = wrangle.all_train_validate_test_data(df, target_var, county)
         
+        # polynomial transform train, validate & test features 
+        # with degree of 2
         self.x_train_degree2,\
         self.x_validate_degree2,\
         self.x_test_degree2 = self.polynomial(degree=2)
 
+
+        # polynomial transform train, validate & test features 
+        # with degree of 2
         self.x_train_degree3,\
         self.x_validate_degree3,\
         self.x_test_degree3 = self.polynomial(degree=3)
+
 
         self.features_to_select= len(self.x_train_scaled.columns)
         self.rfe = create_and_fit_rfe(self.x_train_scaled,
@@ -142,6 +160,11 @@ class LRM:
         self.normalized_rmse_val = round(self.rmse_val_mean_bl/self.validate.taxvaluedollarcnt.mean(), 2)
 
     def OLS_regression(self, use_rfe_features=False):
+        """Fits an Ordinary Least Squares Regression to the data set
+        and makes predictions on train and validate sets. Returns stats
+        of the model such as the name, the RSME on train and validate, and a
+        normalized RMSE to serve as another quick indicator of performance."""
+        
         model_name = 'OLS'
 
         if use_rfe_features:
@@ -189,6 +212,11 @@ class LRM:
             self.OLS_regression(use_rfe_features=True)
 
     def poly_regression(self, use_rfe_features=False, degree=2):
+        """fits the features to a polynomial transformation and then 
+        fits a regression based on those transformed features. Returns a
+        descriptive df of the model, also is concated to a record of all
+        poly regressions used."""
+
         model_name = 'polynomial'
         
         if use_rfe_features:
@@ -253,6 +281,10 @@ class LRM:
 
 
     def lassolars_regression(self, alpha=1, use_rfe_features=False):
+        """Performs a lassolars regression by fitting training data and predicitng
+        train and validate sets. Results are returned in a df and also appended to a 
+        record of all other lassolars_regressions."""
+
         model_name = 'lasso_lars'
         rfe_feat = self.rfe_features
         if use_rfe_features:
@@ -292,6 +324,10 @@ class LRM:
     
     
     def tweedie(self, power=1, alpha=0, use_rfe_features=False):
+        """Performs a tweedie regression by fitting training data and predicitng
+        train and validate sets. Results are returned in a df and also appended to a 
+        record of all other tweedie regressions."""
+
         model_name = 'tweedie'
         rfe_feat = self.rfe_features
         if use_rfe_features:
