@@ -1,0 +1,1 @@
+The purpose of this repository is to complete the regression exercises given in the codeup data science curriculum.
